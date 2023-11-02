@@ -20,5 +20,11 @@ def genereate_numbers():
     numbers = list(map(int, response.text.split()))
     return response.text
 
+@app.route('/guess', methods=['POST'])
+def make_guess():
+    global numbers
+    guess = list(map(int, request.data.split()))
+    return guess
+
 if __name__ == "__main__":
     app.run(debug=True)
