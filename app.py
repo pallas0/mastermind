@@ -3,9 +3,21 @@ import requests
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def hello_world():
-    return 'Hello World!'
+numbers = []
+
+@app.route('/generate', methods=['GET'])
+def genereate_numbers():
+    global numbers
+    response = requests.get('https://www.random.org/integers', params={
+        'num': 4,
+        'min': 0,
+        'max': 7,
+        'col': 1,
+        'base': 10,
+        'format': 'plain',
+        'rnd': 'new'
+    })
+    return response.text.split()
 
 if __name__ == "__main__":
     app.run(debug=True)
