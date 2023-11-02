@@ -17,7 +17,8 @@ def genereate_numbers():
         'format': 'plain',
         'rnd': 'new'
     })
-    return response.text.split()
+    numbers = list(map(int, response.text.split()))
+    return response.text
 
 if __name__ == "__main__":
     app.run(debug=True)
