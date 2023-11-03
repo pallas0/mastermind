@@ -6,6 +6,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 numbers = []
+attempts = 10
 
 @app.route('/generate', methods=['GET'])
 def genereate_numbers():
@@ -19,8 +20,9 @@ def genereate_numbers():
         'format': 'plain',
         'rnd': 'new'
     })
-    numbers = list(map(int, response.text.split()))
-    return response.text
+    numbers = [int(num) for num in response.text.split()]
+    attempts = 10
+    return jsonify({'numbers': numbers, 'attempts': attempts})
 
 @app.route('/guess', methods=['POST'])
 def make_guess():
