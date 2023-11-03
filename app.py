@@ -3,7 +3,8 @@ from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000/"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
 numbers = []
 
 @app.route('/generate', methods=['GET'])
