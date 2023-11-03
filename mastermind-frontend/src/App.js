@@ -10,7 +10,7 @@ function App() {
   const [attempts, setAttempts] = useState(10);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/generate')
+    axios.get('http://127.0.0.1:5000/generate')
     .then(response => {
       setNumbers(response.data.numbers);
       setAttempts(response.data.attempts);
