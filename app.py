@@ -5,6 +5,17 @@ import requests
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
+class Game:
+    def __init__(self, number, guesses, feedback, game_over=False, number_length=4, attempts=10):
+        self.number = number
+        self.guesses = []
+        self.feedback = []
+        self.game_over = game_over
+        self.number_length = number_length
+        self.attempts = attempts
+
+    
+
 numbers = []
 attempts = 10
 
