@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 class Game:
-  def __init__(self, number, guesses=[], feedback=[], player_won=[], number_length=4, attempts=10):
+  def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10):
       self.number = number
       self.guesses = guesses
       self.feedback = feedback
@@ -18,8 +18,10 @@ class Game:
     self.attempts -= 1
     correct_numbers, correct_locations = 0,0
     number_dict = {}
+    #make dict counting number of each number in the secret number
     for elem in self.number:
       number_dict[elem] = number_dict.get(elem,0) + 1
+    #calculate correct_numbers and correct_locations
     for i in range(len(self.number)):
       if guess[i] == self.number[i]:
         correct_locations += 1
@@ -28,6 +30,7 @@ class Game:
         if number_dict[guess[i]] == 0:
           number_dict.pop(guess[i])
         correct_numbers += 1
+
     feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
     self.update_history(guess, feedback)
     #self.check_gameover()
@@ -47,14 +50,13 @@ class Game:
   #   return False
     
 
-numbers = []
-attempts = 10
 
 @app.route('/generate', methods=['GET'])
 def genereate_numbers():
-    global numbers
+    global game
+    game = Game()
     response = requests.get('https://www.random.org/integers', params={
-        'num': 4,
+        'num': game.number_length,
         'min': 0,
         'max': 7,
         'col': 1,
@@ -62,9 +64,9 @@ def genereate_numbers():
         'format': 'plain',
         'rnd': 'new'
     })
-    numbers = [int(num) for num in response.text.split()]
-    attempts = 10
-    return jsonify({'numbers': numbers, 'attempts': attempts})
+    game.number = [int(num) for num in response.text.split()]
+    return game.number
+    #return jsonify({'numbers': numbers, 'attempts': attempts})
 
 @app.route('/guess', methods=['POST'])
 def make_guess():
