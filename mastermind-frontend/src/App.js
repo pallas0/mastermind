@@ -8,11 +8,15 @@ function App() {
   const [guesses, setGuesses] = useState([]);
   const [feedback, setFeedback] = useState([]);
   const [attempts, setAttempts] = useState(10);
+  const [gameOver, setGameOver] = useState(false);
+  const [playerWon, setPlayerWon] = useState(false);
 
 
   const startGame = async() => {
     axios.get('http://127.0.0.1:5000/generate')
     .then(response => {
+      setGameOver(false)
+      setPlayerWon(false)
       setGuess("")
       setGuesses([])
       setFeedback([])
@@ -27,7 +31,11 @@ function App() {
       setAttempts(attempts-1)
       setGuesses([...guesses, guess])
       setFeedback([...feedback, response.data.feedback])
-      setGuess("")
+      if (response.data.player_won.length > 0) {
+        setGameOver(true)
+        setPlayerWon(response.data.player_won[0])
+      }
+      setGuess("");
     })
   }
 
@@ -39,8 +47,14 @@ function App() {
         placeholder="Enter your guess"
         value={guess}
         onChange={(e) => setGuess(e.target.value)}
+        disabled={gameOver}
       />
-      <button onClick={submitGuess}>Submit Guess</button>
+      <button onClick={submitGuess} disabled={gameOver}>Submit Guess</button>
+      {gameOver && (
+        <div className="game-over-message">
+          {playerWon ? "You won!" : "You lost =("}
+        </div>
+      )}
       <p>Attempts: {attempts}</p>
       <div className="guess-feedback">
         <div className="guesses">
