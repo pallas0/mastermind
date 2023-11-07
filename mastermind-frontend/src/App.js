@@ -11,6 +11,8 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false)
   const [gameOver, setGameOver] = useState(false);
   const [playerWon, setPlayerWon] = useState(false);
+  const [secretNumber, setSecretNumber] = useState([])
+
 
 
   const startGame = async() => {
@@ -23,6 +25,7 @@ function App() {
       setGuesses([])
       setFeedback([])
       setAttempts(response.data.attempts);
+      setSecretNumber(response.data.number)
     })
   }
 
@@ -55,6 +58,9 @@ function App() {
       {gameOver && (
         <div className="game-over-message">
           {playerWon ? "You won!" : "You lost =("}
+          <div>
+          The secret number was:  {secretNumber}
+          </div>
         </div>
       )}
       <p>Attempts: {attempts}</p>

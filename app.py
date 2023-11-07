@@ -63,10 +63,8 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
-    print("number: ", game.number)
-    print("print: ", game.player_won)
-    print("print: ", game.guesses)
-    return jsonify({'attempts': game.attempts})
+    number = game.number
+    return jsonify({'attempts': game.attempts, 'number': number})
 
 @app.route('/compare_guess', methods=['POST'])
 def compare_guess():
@@ -75,6 +73,7 @@ def compare_guess():
    guess = [int(char) for char in guess]
    feedback = game.process_guess(guess)
    player_won = game.player_won
+   number = game.number
    return jsonify({'feedback': feedback, 'player_won': player_won})
 
 
