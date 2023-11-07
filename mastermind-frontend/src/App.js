@@ -30,6 +30,10 @@ function App() {
   }
 
   const submitGuess = () => {
+    if (guess.length !== 4 || !/^[0-9]{4}$/.test(guess)) {
+      alert("Please enter a 4-digit guess using only numeric characters.");
+      return;
+    }
     axios.post('http://127.0.0.1:5000/compare_guess', {guess})
     .then(response => {
       console.log(response.data);
