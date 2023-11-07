@@ -50,7 +50,7 @@ class Game:
 
 
 @app.route('/generate', methods=['GET'])
-def genereate_numbers():
+def generate_numbers():
     global game
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
     response = requests.get('https://www.random.org/integers', params={
