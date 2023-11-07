@@ -34,6 +34,7 @@ class Game:
     feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
     self.update_history(guess, feedback)
     #self.check_gameover()
+    print("feedback from process_guess: ", feedback)
     return feedback
 
   def update_history(self, guess, feedback):
@@ -65,14 +66,18 @@ def genereate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
-    
-    return jsonify({game})
+    print(game.number)
+    return jsonify({'attempts': game.attempts})
 
-@app.route('/guess', methods=['POST'])
-def make_guess():
-    global numbers
-    guess = list(map(int, request.data.split()))
-    return guess
+@app.route('/compare_guess', methods=['POST'])
+def compare_guess():
+   global game
+   guess = request.json.get('guess')
+   guess = [int(char) for char in guess]
+   feedback = game.process_guess(guess)
+   print(feedback)
+   return jsonify({'feedback': feedback})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
