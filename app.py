@@ -15,7 +15,6 @@ class Game:
       self.attempts = attempts
 
   def process_guess(self, guess):
-    self.attempts -= 1
     correct_numbers, correct_locations = 0,0
     number_dict = {}
     #make dict counting number of each number in the secret number
@@ -33,22 +32,20 @@ class Game:
 
     feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
     self.update_history(guess, feedback)
-    #self.check_gameover()
+    self.check_gameover()
     print("feedback from process_guess: ", feedback)
     return feedback
 
   def update_history(self, guess, feedback):
     self.guesses.append(guess)
     self.feedback.append(feedback)
+    self.attempts -= 1
 
-  #ok this flow we can iron out later
-  # def check_gameover(self):
-  #   if self.guesses[-1] == self.number :
-  #     self.player_won.append(True)
-  #     return True
-  #   elif self.attempts == 0:
-  #     self.player_won.append(False)
-  #   return False
+  def check_gameover(self):
+    if self.guesses[-1] == self.number :
+      self.player_won.append(True)
+    elif self.attempts == 0:
+      self.player_won.append(False)
     
 
 
@@ -75,8 +72,8 @@ def compare_guess():
    guess = request.json.get('guess')
    guess = [int(char) for char in guess]
    feedback = game.process_guess(guess)
-   print(feedback)
-   return jsonify({'feedback': feedback})
+   player_won = game.player_won
+   return jsonify({'feedback': feedback, 'player_won': player_won})
 
 
 if __name__ == "__main__":
