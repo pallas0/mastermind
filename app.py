@@ -63,6 +63,27 @@ class Game:
       self.player_won.append(False)
     
 
+@app.route('/get_best_scores', methods=['GET'])
+def get_best_scores():
+    score = BestScores(player_name='John', score=42)
+    db.session.add(score)
+    db.session.commit()
+
+    try:
+        best_scores = BestScores.query.all()
+        # Convert the database records to a list of dictionaries
+        best_scores_list = [
+            {
+                'id': score.id,
+                'player_name': score.player_name,
+                'score': score.score
+            }
+            for score in best_scores
+        ]
+        return jsonify(best_scores_list)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Return a 500 Internal Server Error on failure
+
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
