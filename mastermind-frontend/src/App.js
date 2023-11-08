@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import './App.css';
+import BestScoresTable from './BestScoresTable';
 
 function App() {
   const [guess, setGuess] = useState("")
@@ -11,7 +12,8 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false)
   const [gameOver, setGameOver] = useState(false);
   const [playerWon, setPlayerWon] = useState(false);
-  const [secretNumber, setSecretNumber] = useState([])
+  const [secretNumber, setSecretNumber] = useState([]);
+  const [bestScores, setBestScores] = useState([]);
 
 
 
@@ -27,6 +29,7 @@ function App() {
       setFeedback([])
       setAttempts(response.data.attempts);
       setSecretNumber(response.data.number)
+      setBestScores(response.data.best_scores);
     })
   }
 
@@ -87,6 +90,7 @@ function App() {
           </ul>
         </div>
       </div>
+      <BestScoresTable bestScores={bestScores} />
     </div>
   );
 }
