@@ -65,8 +65,13 @@ class Game:
 
 @app.route('/get_best_scores', methods=['GET'])
 def get_best_scores():
-    score = BestScores(player_name='John', score=42)
-    db.session.add(score)
+    """
+    code scrap to add scores
+    """
+    # score = BestScores(player_name='John', score=42)
+    # db.session.add(score)
+    # db.session.commit()
+    BestScores.query.delete()
     db.session.commit()
 
     try:
