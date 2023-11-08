@@ -1,11 +1,22 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 import psycopg2, requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
 
+db = SQLAlchemy(app)
+
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+
+class BestScores(db.Model):
+    __tablename__ = 'BestScores'
+    id = db.Column(db.Integer, primary_key=True)
+    player_name = db.Column(db.String(80))
+    score = db.Column(db.Integer)
+
+
 
 class Game:
   def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10):
