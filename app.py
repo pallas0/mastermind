@@ -48,7 +48,6 @@ class Game:
     feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
     self.update_history(guess, feedback)
     self.check_gameover()
-    print("feedback from process_guess: ", feedback)
     return feedback
 
   def update_history(self, guess, feedback):
@@ -68,11 +67,15 @@ def get_best_scores():
     """
     code scrap to add scores
     """
-    # score = BestScores(player_name='John', score=42)
-    # db.session.add(score)
+    # score1 = BestScores(player_name='Rex', score=2)
+    # score2 = BestScores(player_name='Amy', score=4)
+    # score3 = BestScores(player_name='Jesus', score=5)
+    # db.session.add(score1)
+    # db.session.add(score2)
+    # db.session.add(score3)
     # db.session.commit()
-    BestScores.query.delete()
-    db.session.commit()
+    # BestScores.query.delete()
+    # db.session.commit()
 
     try:
         best_scores = BestScores.query.all()
@@ -104,8 +107,21 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
+    #check that we can't directly return as game.number, below line might be unnecessary
     number = game.number
-    return jsonify({'attempts': game.attempts, 'number': number})
+    best_scores = BestScores.query.order_by(BestScores.score).all()
+
+    best_scores_list = [
+        {
+          'id': score.id,
+          'player_name': score.player_name,
+          'score': score.score
+        }
+        for score in best_scores
+    ]
+    print(best_scores_list)
+
+    return jsonify({'attempts': game.attempts, 'number': number, 'best_scores': best_scores_list})
 
 @app.route('/compare_guess', methods=['POST'])
 def compare_guess():

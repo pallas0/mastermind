@@ -18,6 +18,7 @@ function App() {
   const startGame = async() => {
     axios.get('http://127.0.0.1:5000/generate')
     .then(response => {
+      console.log(response.data)
       setGameStarted(true)
       setGameOver(false)
       setPlayerWon(false)
