@@ -8,7 +8,7 @@ function BestScoresTable({ bestScores }) {
         <thead>
           <tr>
             <th>Player Name</th>
-            <th>Score</th>
+            <th>Number of Attempts</th>
           </tr>
         </thead>
         <tbody>

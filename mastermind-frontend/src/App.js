@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import './App.css';
 import BestScoresTable from './BestScoresTable';
+import SubmitBestScore from './SubmitBestScore';
 
 function App() {
   const [guess, setGuess] = useState("")
@@ -58,6 +59,17 @@ function App() {
     })
   }
 
+  function displayScoreSubmission() {
+    if (bestScores.length == 3) {
+      const maxScore = Math.max(...bestScores.map(score => score.score));
+      const newScore = 10-attempts;
+      return newScore < maxScore;
+    }
+    else {
+      return true
+    }
+  }
+
   return (
     <div className="App">
       <button onClick={startGame}>Generate Number + Start Game</button>
@@ -78,6 +90,9 @@ function App() {
         </div>
       )}
       <p>Attempts: {attempts}</p>
+      {gameOver && displayScoreSubmission() && (
+      <SubmitBestScore numberOfAttempts={attempts} />
+    )}
       <div className="guess-feedback">
         <div className="guesses">
           <h3>Guesses</h3>
