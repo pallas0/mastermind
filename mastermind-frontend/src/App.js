@@ -15,7 +15,15 @@ function App() {
   const [secretNumber, setSecretNumber] = useState([]);
   const [bestScores, setBestScores] = useState([]);
 
-
+  useEffect(() => {
+    axios.get('http://127.0.0.1:5000/best_scores')
+      .then(response => {
+        setBestScores(response.data.best_scores);
+      })
+      .catch(error => {
+        console.error('Error fetching best scores:', error);
+      });
+  }, []);
 
   const startGame = async() => {
     axios.get('http://127.0.0.1:5000/generate')
@@ -29,7 +37,6 @@ function App() {
       setFeedback([])
       setAttempts(response.data.attempts);
       setSecretNumber(response.data.number)
-      setBestScores(response.data.best_scores);
     })
   }
 
@@ -40,7 +47,6 @@ function App() {
     }
     axios.post('http://127.0.0.1:5000/compare_guess', {guess})
     .then(response => {
-      console.log(response.data);
       setAttempts(attempts-1)
       setGuesses([...guesses, guess])
       setFeedback([...feedback, response.data.feedback])

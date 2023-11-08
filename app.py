@@ -62,8 +62,6 @@ class Game:
       self.player_won.append(False)
     
 
-@app.route('/get_best_scores', methods=['GET'])
-def get_best_scores():
     """
     code scrap to add scores
     """
@@ -77,21 +75,20 @@ def get_best_scores():
     # BestScores.query.delete()
     # db.session.commit()
 
-    try:
-        best_scores = BestScores.query.all()
-        # Convert the database records to a list of dictionaries
-        best_scores_list = [
-            {
-                'id': score.id,
-                'player_name': score.player_name,
-                'score': score.score
-            }
-            for score in best_scores
-        ]
-        return jsonify(best_scores_list)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500  # Return a 500 Internal Server Error on failure
 
+@app.route('/best_scores', methods=['GET'])
+def best_scores():
+    best_scores = BestScores.query.order_by(BestScores.score).all()
+
+    best_scores_list = [
+        {
+          'id': score.id,
+          'player_name': score.player_name,
+          'score': score.score
+        }
+        for score in best_scores
+    ]
+    return jsonify({'best_scores': best_scores_list})
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
@@ -107,21 +104,8 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
-    #check that we can't directly return as game.number, below line might be unnecessary
-    number = game.number
-    best_scores = BestScores.query.order_by(BestScores.score).all()
 
-    best_scores_list = [
-        {
-          'id': score.id,
-          'player_name': score.player_name,
-          'score': score.score
-        }
-        for score in best_scores
-    ]
-    print(best_scores_list)
-
-    return jsonify({'attempts': game.attempts, 'number': number, 'best_scores': best_scores_list})
+    return jsonify({'attempts': game.attempts, 'number': game.number})
 
 @app.route('/compare_guess', methods=['POST'])
 def compare_guess():
