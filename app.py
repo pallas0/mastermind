@@ -66,6 +66,8 @@ class Game:
     """
     code scrap to add scores
     """
+    #import pdb
+    #pdb.set_trace()
     # score1 = BestScores(player_name='Rex', score=2)
     # score2 = BestScores(player_name='Amy', score=4)
     # score3 = BestScores(player_name='Jesus', score=5)
@@ -120,10 +122,11 @@ def compare_guess():
 @app.route('/update_best_score', methods=['POST'])
 def update_best_score():
    try:
-      print("hit")
       data = request.json
       name = data['name']
       score = data['new_score']
+      print("name: ", name)
+      print("score: ", score)
 
       new_score = BestScores(player_name=name, score=score)
       db.session.add(new_score)
@@ -137,7 +140,6 @@ def update_best_score():
       return jsonify({'status': 200})
    
    except Exception as e:
-      print("bad hit")
       return jsonify({'error': str(e), 'status': 500})
 
 
