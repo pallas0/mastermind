@@ -61,22 +61,6 @@ class Game:
       self.player_won.append(True)
     elif self.attempts == 0:
       self.player_won.append(False)
-    
-
-    """
-    code scrap to add scores
-    """
-    #import pdb
-    #pdb.set_trace()
-    # score1 = BestScores(player_name='Rex', score=2)
-    # score2 = BestScores(player_name='Amy', score=4)
-    # score3 = BestScores(player_name='Jesus', score=5)
-    # db.session.add(score1)
-    # db.session.add(score2)
-    # db.session.add(score3)
-    # db.session.commit()
-    # BestScores.query.delete()
-    # db.session.commit()
 
 
 @app.route('/best_scores', methods=['GET'])
@@ -125,8 +109,6 @@ def update_best_score():
       data = request.json
       name = data['name']
       score = data['new_score']
-      print("name: ", name)
-      print("score: ", score)
 
       new_score = BestScores(player_name=name, score=score)
       db.session.add(new_score)
