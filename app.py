@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2, requests
 
@@ -7,6 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
