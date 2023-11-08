@@ -5,8 +5,9 @@ function SubmitBestScore({ numberOfAttempts }) {
   const [name, setName] = useState('');
   const [score, setScore] = useState(numberOfAttempts);
 
-  const handleSubmit = () => {
-    axios.post('http://127.0.0.1:5000/update_best_score', { name, score })
+  const handleSubmit = (score) => {
+    var new_score = 10 - score;
+    axios.post('http://127.0.0.1:5000/update_best_score', { name, new_score })
       .then(response => {
         console.log('Best score submitted successfully');
       })

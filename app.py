@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2, requests
+from sqlalchemy import desc
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
@@ -114,8 +115,30 @@ def compare_guess():
    guess = [int(char) for char in guess]
    feedback = game.process_guess(guess)
    player_won = game.player_won
-   number = game.number
    return jsonify({'feedback': feedback, 'player_won': player_won})
+
+@app.route('/update_best_score', methods=['POST'])
+def update_best_score():
+   try:
+      print("hit")
+      data = request.json
+      name = data['name']
+      score = data['new_score']
+
+      new_score = BestScores(player_name=name, score=score)
+      db.session.add(new_score)
+      db.session.commit()
+
+      highest_score_entry = BestScores.query.order_by(desc(BestScores.score)).first()
+      if highest_score_entry:
+         db.session.delete(highest_score_entry)
+         db.session.commit()
+
+      return jsonify({'status': 200})
+   
+   except Exception as e:
+      print("bad hit")
+      return jsonify({'error': str(e), 'status': 500})
 
 
 if __name__ == "__main__":
