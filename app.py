@@ -105,7 +105,7 @@ def best_scores():
 def generate_numbers():
     global game, game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-    game_timer = GameTimer(time=15)
+    game_timer = GameTimer(time=600)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
