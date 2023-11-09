@@ -122,7 +122,7 @@ def generate_numbers():
     })
     game.number = [int(num) for num in response.text.split()]
 
-    return jsonify({'attempts': game.attempts, 'number': game.number})
+    return jsonify({'attempts': game.attempts})
 
 @app.route('/compare_guess', methods=['POST'])
 def compare_guess():
@@ -132,12 +132,15 @@ def compare_guess():
    feedback = game.process_guess(guess)
    #check if can just swap out line beneath w game.player_won
    player_won = game.player_won
+   number = []
 
    if player_won:
       #if do not need to declare global time at top
       #maybe cut global game declaration
       game_timer.zero_time()
-   return jsonify({'feedback': feedback, 'player_won': player_won})
+      number = game.number
+
+   return jsonify({'feedback': feedback, 'player_won': player_won, 'number': number})
 
 @app.route('/update_best_score', methods=['POST'])
 def update_best_score():
