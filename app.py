@@ -107,6 +107,10 @@ def generate_numbers():
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
     game_timer = GameTimer(time=15)
 
+    timer_thread = threading.Thread(target=game_timer.run_timer)
+    timer_thread.daemon = True
+    timer_thread.start()
+
     response = requests.get('https://www.random.org/integers', params={
         'num': game.number_length,
         'min': 0,

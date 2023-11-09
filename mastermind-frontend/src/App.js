@@ -27,7 +27,7 @@ function App() {
 
     socket.on('time_up', () => {
       setRemainingTime(0);
-      setGameOver = True ///ok check that this is ..necessary? I feel like we sent something
+      setGameOver(true) ///ok check that this is ..necessary? I feel like we sent something
       //through the backend on this
       alert('Time is up!')
     })
