@@ -1,15 +1,18 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2, requests
 from sqlalchemy import desc
+import time
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+socketio = SocketIO(app)
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
@@ -62,6 +65,25 @@ class Game:
     elif self.attempts == 0:
       self.player_won.append(False)
 
+class Timer:
+   def __init__(self, time=600, socket=socketio):
+      self.time = time
+      self.socket = socket
+
+      socketio.emit('start_timer', {'remaining_time': self.time}, namespace='/game')
+    
+   def run_timer(self):
+      while self.time > 0:
+         time.sleep(1)
+         self.time -= 1
+
+         if self.time == 0:
+            self.socket.emit('time_up', namespace='/game')
+            break
+         
+   def zero_time(self):
+      self.time = 0
+
 
 @app.route('/best_scores', methods=['GET'])
 def best_scores():
@@ -79,8 +101,10 @@ def best_scores():
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
-    global game
+    global game, timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
+    
+
     response = requests.get('https://www.random.org/integers', params={
         'num': game.number_length,
         'min': 0,
