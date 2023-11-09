@@ -16,13 +16,11 @@ function App() {
   const [playerWon, setPlayerWon] = useState(false);
   const [secretNumber, setSecretNumber] = useState([]);
   const [bestScores, setBestScores] = useState([]);
-  const [remainingTime, setRemainingTime] = useState(15)
 
   const socket = socketIOClient('http://127.0.0.1:5000/game', { transports: ['websocket']})
 
   useEffect(() => {
     socket.on('time_up', () => {
-      setRemainingTime(0);
       setGameOver(true) ///ok check that this is ..necessary? I feel like we sent something
       //through the backend on this
       alert('Time is up!')
@@ -47,7 +45,7 @@ function App() {
       setGuesses([])
       setFeedback([])
       setAttempts(response.data.attempts);
-      setSecretNumber(response.data.number)
+      setSecretNumber([])
     })
   }
 
