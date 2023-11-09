@@ -9,6 +9,7 @@ import threading
 from time import sleep
 
 from game import Game
+from gametimer import GameTimer;
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
@@ -24,24 +25,6 @@ class BestScores(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_name = db.Column(db.String(80))
     score = db.Column(db.Integer)
-
-
-class GameTimer:
-   def __init__(self, time=600, socket=socketio):
-      self.time = time
-      self.socket = socket
-
-   def run_timer(self):
-      while self.time > 0:
-         sleep(1)
-         self.time -= 1
-
-         if self.time == 0:
-            self.socket.emit('time_up', namespace='/game')
-            break
-         
-   def zero_time(self):
-      self.time = 0
 
 
 @app.route('/best_scores', methods=['GET'])
@@ -62,7 +45,7 @@ def best_scores():
 def generate_numbers():
     global game, game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-    game_timer = GameTimer(time=600)
+    game_timer = GameTimer(time=5, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
