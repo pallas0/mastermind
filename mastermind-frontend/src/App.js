@@ -21,10 +21,6 @@ function App() {
   const socket = socketIOClient('http://127.0.0.1:5000/game', { transports: ['websocket']})
 
   useEffect(() => {
-    socket.on('start_timer', (data) => {
-      setRemainingTime(data.remaining_time);
-    });
-
     socket.on('time_up', () => {
       setRemainingTime(0);
       setGameOver(true) ///ok check that this is ..necessary? I feel like we sent something

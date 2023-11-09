@@ -15,7 +15,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-#socketio.init_app(app, cors_allowed_origins="*")
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 class BestScores(db.Model):
@@ -23,7 +22,6 @@ class BestScores(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_name = db.Column(db.String(80))
     score = db.Column(db.Integer)
-
 
 
 class Game:
@@ -38,10 +36,10 @@ class Game:
   def process_guess(self, guess):
     correct_numbers, correct_locations = 0,0
     number_dict = {}
-    #make dict counting number of each number in the secret number
+    
     for elem in self.number:
       number_dict[elem] = number_dict.get(elem,0) + 1
-    #calculate correct_numbers and correct_locations
+    
     for i in range(len(self.number)):
       if guess[i] == self.number[i]:
         correct_locations += 1
@@ -72,8 +70,6 @@ class GameTimer:
       self.time = time
       self.socket = socket
 
-      socketio.emit('start_timer', {'remaining_time': self.time}, namespace='/game')
-    
    def run_timer(self):
       while self.time > 0:
          sleep(1)
@@ -163,9 +159,6 @@ def update_best_score():
    except Exception as e:
       return jsonify({'error': str(e), 'status': 500})
 
-@socketio.on('start_timer', namespace='/game')
-def start_timer(message):
-   emit('start_timer', message)
 
 @socketio.on('time_up', namespace='/game')
 def time_up():
