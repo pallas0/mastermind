@@ -5,7 +5,8 @@ from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2, requests
 from sqlalchemy import desc
-import time
+import threading
+from time import sleep
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
@@ -66,7 +67,7 @@ class Game:
     elif self.attempts == 0:
       self.player_won.append(False)
 
-class Timer:
+class GameTimer:
    def __init__(self, time=600, socket=socketio):
       self.time = time
       self.socket = socket
@@ -75,7 +76,7 @@ class Timer:
     
    def run_timer(self):
       while self.time > 0:
-         time.sleep(1)
+         sleep(1)
          self.time -= 1
 
          if self.time == 0:
@@ -102,9 +103,9 @@ def best_scores():
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
-    global game, timer
+    global game, game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-    timer = Timer(time=15)
+    game_timer = GameTimer(time=15)
 
     response = requests.get('https://www.random.org/integers', params={
         'num': game.number_length,
@@ -131,7 +132,7 @@ def compare_guess():
    if player_won:
       #if do not need to declare global time at top
       #maybe cut global game declaration
-      timer.time = 0
+      game_timer.zero_time()
    return jsonify({'feedback': feedback, 'player_won': player_won})
 
 @app.route('/update_best_score', methods=['POST'])
