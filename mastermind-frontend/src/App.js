@@ -75,7 +75,7 @@ function App() {
       return newScore < maxScore;
     }
     else {
-      return true
+      return playerWon;
     }
   }
 

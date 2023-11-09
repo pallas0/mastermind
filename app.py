@@ -107,12 +107,13 @@ def update_best_score():
       name = data['name']
       score = data['new_score']
 
-      
-      highest_score_entry = BestScores.query.order_by(desc(BestScores.score)).first()
-      if highest_score_entry:
+      ordered_scores = BestScores.query.order_by(desc(BestScores.score))
+      highest_score_entry = ordered_scores.first()
+
+      if highest_score_entry and ordered_scores.count() >= 3:
          db.session.delete(highest_score_entry)
          db.session.commit()
-
+      
       new_score = BestScores(player_name=name, score=score)
       db.session.add(new_score)
       db.session.commit()
