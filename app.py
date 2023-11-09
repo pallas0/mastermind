@@ -14,6 +14,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app)
 
+socketio.init_app(app, cors_allowed_origins="*")
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 class BestScores(db.Model):
