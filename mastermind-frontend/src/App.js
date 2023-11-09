@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import socketIOClient from 'socket.io-client';
 import axios from 'axios';
 
 import './App.css';
@@ -15,8 +16,22 @@ function App() {
   const [playerWon, setPlayerWon] = useState(false);
   const [secretNumber, setSecretNumber] = useState([]);
   const [bestScores, setBestScores] = useState([]);
+  const [remainingTime, setRemainingTime] = useState(15)
+
+  const socket = socketIOClient('http://127.0.0.1:5000/game')
 
   useEffect(() => {
+    socket.on('start_timer', (data) => {
+      setRemainingTime(data.remaining_time);
+    });
+
+    socket.on('time_up', () => {
+      setRemainingTime(0);
+      setGameOver = True ///ok check that this is ..necessary? I feel like we sent something
+      //through the backend on this
+      alert('Time is up!')
+    })
+
     axios.get('http://127.0.0.1:5000/best_scores')
       .then(response => {
         setBestScores(response.data.best_scores);
