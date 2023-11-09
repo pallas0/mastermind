@@ -18,7 +18,7 @@ function App() {
   const [bestScores, setBestScores] = useState([]);
   const [remainingTime, setRemainingTime] = useState(15)
 
-  const socket = socketIOClient('http://127.0.0.1:5000/game')
+  const socket = socketIOClient('http://127.0.0.1:5000/game', { transports: ['websocket']})
 
   useEffect(() => {
     socket.on('start_timer', (data) => {
@@ -51,6 +51,7 @@ function App() {
       setGuesses([])
       setFeedback([])
       setAttempts(response.data.attempts);
+      setSecretNumber(response.data.number)
     })
   }
 
