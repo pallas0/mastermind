@@ -117,6 +117,7 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
+    print(game.number)
 
     return jsonify({'attempts': game.attempts})
 
@@ -145,14 +146,15 @@ def update_best_score():
       name = data['name']
       score = data['new_score']
 
-      new_score = BestScores(player_name=name, score=score)
-      db.session.add(new_score)
-      db.session.commit()
-
+      
       highest_score_entry = BestScores.query.order_by(desc(BestScores.score)).first()
       if highest_score_entry:
          db.session.delete(highest_score_entry)
          db.session.commit()
+
+      new_score = BestScores(player_name=name, score=score)
+      db.session.add(new_score)
+      db.session.commit()
 
       return jsonify({'status': 200})
    
