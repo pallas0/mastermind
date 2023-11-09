@@ -103,7 +103,7 @@ def best_scores():
 def generate_numbers():
     global game, timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-    
+    timer = Timer(time=15)
 
     response = requests.get('https://www.random.org/integers', params={
         'num': game.number_length,
@@ -124,7 +124,13 @@ def compare_guess():
    guess = request.json.get('guess')
    guess = [int(char) for char in guess]
    feedback = game.process_guess(guess)
+   #check if can just swap out line beneath w game.player_won
    player_won = game.player_won
+
+   if player_won:
+      #if do not need to declare global time at top
+      #maybe cut global game declaration
+      timer.time = 0
    return jsonify({'feedback': feedback, 'player_won': player_won})
 
 @app.route('/update_best_score', methods=['POST'])
@@ -147,6 +153,14 @@ def update_best_score():
    
    except Exception as e:
       return jsonify({'error': str(e), 'status': 500})
+
+@socketio.on('start_timer', namespace='/game')
+def start_timer(message):
+   emit('start_timer', message)
+
+@socketio.on('time_up', namespace='/game')
+def time_up():
+   emit('time_up')
 
 
 if __name__ == "__main__":
