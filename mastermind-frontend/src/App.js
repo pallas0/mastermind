@@ -16,6 +16,7 @@ function App() {
   const [playerWon, setPlayerWon] = useState(false);
   const [secretNumber, setSecretNumber] = useState([]);
   const [bestScores, setBestScores] = useState([]);
+  const [gameID, setGameID] = useState(null);
 
   const socket = socketIOClient('http://127.0.0.1:5000/game', { transports: ['websocket']})
 
@@ -39,6 +40,7 @@ function App() {
   const startGame = async() => {
     axios.get('http://127.0.0.1:5000/generate')
     .then(response => {
+      console.log(response.data)
       setGameStarted(true)
       setGameOver(false)
       setPlayerWon(false)
@@ -47,6 +49,7 @@ function App() {
       setFeedback([])
       setAttempts(response.data.attempts);
       setSecretNumber([])
+      setGameID(response.data.game_id)
     })
   }
 
@@ -55,12 +58,16 @@ function App() {
       alert("Please enter a 4-digit guess using only numeric characters.");
       return;
     }
-    axios.post('http://127.0.0.1:5000/compare_guess', {guess})
+
+    axios.post('http://127.0.0.1:5000/compare_guess', {
+      guess: guess,
+      gameID: gameID
+    })
     .then(response => {
       setAttempts(attempts-1)
       setGuesses([...guesses, guess])
       setFeedback([...feedback, response.data.feedback])
-      if (response.data.player_won.length > 0) {
+      if (response.data.player_won.length) {
         setSecretNumber(response.data.number)
         setGameOver(true)
         setPlayerWon(response.data.player_won[0])

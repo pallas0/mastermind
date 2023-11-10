@@ -11,7 +11,7 @@ from time import sleep
 
 from game import Game
 from gametimer import GameTimer;
-from models import db, BestScores
+from models import db, BestScores, GameState
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
@@ -29,29 +29,41 @@ def best_scores():
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
-    global game, game_timer
+    global game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
+    game_state = GameState(state=game.to_dict())
+    db.session.add(game_state)
+    db.session.commit()
     game_timer = GameTimer(time=600, number=game.number, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
     timer_thread.start()
 
-    return jsonify({'attempts': game.attempts})
+    return jsonify({'game_id': game_state.id, 'attempts': game.attempts})
 
 @app.route('/compare_guess', methods=['POST'])
 def compare_guess():
-   global game
+   game_id = request.json.get('gameID')
+   game_state = GameState.query.get(game_id)
+   if not game_state:
+       return jsonify({'error': 'Game not found', 'status': 404})
+   
+   game = Game.from_dict(game_state.state)
+
    guess = request.json.get('guess')
    guess = [int(char) for char in guess]
    feedback = game.process_guess(guess)
-   #check if can just swap out line beneath w game.player_won
+
+   game_state.state = game.to_dict()
+   db.session.commit()
+
    player_won = game.player_won
    number = []
 
+   print(player_won)
    if player_won:
-      #if do not need to declare global time at top
-      #maybe cut global game declaration
+      print("hit")
       game_timer.zero_time()
       number = game.number
 
