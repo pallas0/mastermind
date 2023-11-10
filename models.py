@@ -40,3 +40,8 @@ class BestScores(db.Model):
         
         except Exception as e:
             return {'error': str(e), 'status': 500}
+        
+class GameState(db.Model):
+    __tablename__ = 'game_state'
+    id = db.Column(db.Integer, primary_key=True)
+    state = db.Column(db.PickleType)

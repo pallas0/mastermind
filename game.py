@@ -19,6 +19,30 @@ class Game:
         'rnd': 'new'
     })
       self.number = [int(num) for num in response.text.split()]
+  
+  def to_dict(self):
+    return {
+      'number': self.number,
+      'guesses': self.guesses,
+      'feedback': self.feedback,
+      'player_won': self.player_won,
+      'number_length': self.number_length,
+      'attempts': self.attempts,
+      'game_over': self.game_over
+    }
+  
+  @staticmethod
+  def from_dict(data):
+    game = Game()
+    game.number = data['number']
+    game.guesses = data['guesses']
+    game.feedback = data['feedback']
+    game.player_won = data['player_won']
+    game.number_length = data['number_length']
+    game.attempts = data['attempts']
+    game.game_over = data['game_over']
+    return game
+  
 
   def process_guess(self, guess):
     correct_numbers, correct_locations = 0,0
