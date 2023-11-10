@@ -31,18 +31,6 @@ def best_scores():
 def generate_numbers():
     global game, game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-
-    response = requests.get('https://www.random.org/integers', params={
-        'num': game.number_length,
-        'min': 0,
-        'max': 7,
-        'col': 1,
-        'base': 10,
-        'format': 'plain',
-        'rnd': 'new'
-    })
-    game.number = [int(num) for num in response.text.split()]
-    print(game.number)
     game_timer = GameTimer(time=600, number=game.number, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)

@@ -1,11 +1,23 @@
+import requests
+
 class Game:
   def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10):
-      self.number = number
       self.guesses = guesses
       self.feedback = feedback
       self.player_won = player_won
       self.number_length = number_length
       self.attempts = attempts
+
+      response = requests.get('https://www.random.org/integers', params={
+        'num': self.number_length,
+        'min': 0,
+        'max': 7,
+        'col': 1,
+        'base': 10,
+        'format': 'plain',
+        'rnd': 'new'
+    })
+      self.number = [int(num) for num in response.text.split()]
 
   def process_guess(self, guess):
     correct_numbers, correct_locations = 0,0
