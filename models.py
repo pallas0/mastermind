@@ -4,6 +4,9 @@ from sqlalchemy import desc
 db = SQLAlchemy()
 
 class BestScores(db.Model):
+    """
+    This class represents the BestScores model for the database.
+    """
     __tablename__ = 'BestScores'
     id = db.Column(db.Integer, primary_key=True)
     player_name = db.Column(db.String(80))
@@ -24,6 +27,11 @@ class BestScores(db.Model):
     
     @classmethod
     def update_best_score(cls, name, new_score):
+        """
+        This method updates the best score in the database.
+        If there are already 3 scores, it deletes the highest score before adding the new one.
+        It returns a dictionary with the status of the operation.
+        """
         try:
             ordered_scores = cls.query.order_by(desc(cls.score))
             highest_score_entry = ordered_scores.first()
@@ -42,6 +50,10 @@ class BestScores(db.Model):
             return {'error': str(e), 'status': 500}
         
 class GameState(db.Model):
+    """
+    This class represents the GameState model for the database.
+    It contains the game state which is stored as a PickleType.
+    """
     __tablename__ = 'game_state'
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.PickleType)
