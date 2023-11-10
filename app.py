@@ -45,11 +45,6 @@ def best_scores():
 def generate_numbers():
     global game, game_timer
     game = Game(number=[], guesses=[], feedback=[], player_won=[])
-    game_timer = GameTimer(time=5, socket=socketio)
-
-    timer_thread = threading.Thread(target=game_timer.run_timer)
-    timer_thread.daemon = True
-    timer_thread.start()
 
     response = requests.get('https://www.random.org/integers', params={
         'num': game.number_length,
@@ -61,6 +56,11 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
+    game_timer = GameTimer(time=600, number=game.number, socket=socketio)
+
+    timer_thread = threading.Thread(target=game_timer.run_timer)
+    timer_thread.daemon = True
+    timer_thread.start()
     print(game.number)
 
     return jsonify({'attempts': game.attempts})
@@ -109,7 +109,7 @@ def update_best_score():
 
 @socketio.on('time_up', namespace='/game')
 def time_up():
-   emit('time_up')
+   emit('time_up', {'number': game.number})
 
 
 if __name__ == "__main__":

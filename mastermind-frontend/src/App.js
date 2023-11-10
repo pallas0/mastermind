@@ -20,9 +20,10 @@ function App() {
   const socket = socketIOClient('http://127.0.0.1:5000/game', { transports: ['websocket']})
 
   useEffect(() => {
-    socket.on('time_up', () => {
-      setGameOver(true) ///ok check that this is ..necessary? I feel like we sent something
-      //through the backend on this
+    socket.on('time_up', (data) => {
+      setGameOver(true)
+      console.log(data)
+      setSecretNumber(data.number)
       alert('Time is up!')
     })
 
