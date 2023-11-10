@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
+import os
 import psycopg2, requests
 from sqlalchemy import desc
 import threading
@@ -13,7 +14,7 @@ from gametimer import GameTimer;
 from models import db, BestScores
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 
 db.init_app(app)
 migrate = Migrate(app, db)
