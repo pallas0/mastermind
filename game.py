@@ -1,12 +1,13 @@
 import requests
 
 class Game:
-  def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10):
+  def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10, game_over=False):
       self.guesses = guesses
       self.feedback = feedback
       self.player_won = player_won
       self.number_length = number_length
       self.attempts = attempts
+      self.game_over = game_over
 
       response = requests.get('https://www.random.org/integers', params={
         'num': self.number_length,
@@ -48,5 +49,7 @@ class Game:
   def check_gameover(self):
     if self.guesses[-1] == self.number :
       self.player_won.append(True)
+      self.game_over = True
     elif self.attempts == 0:
       self.player_won.append(False)
+      self.game_over = True
