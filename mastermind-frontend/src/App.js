@@ -73,7 +73,7 @@ function App() {
     if (bestScores.length == 3) {
       const maxScore = Math.max(...bestScores.map(score => score.score));
       const newScore = 10-attempts;
-      return newScore < maxScore;
+      return (newScore < maxScore) && playerWon;
     }
     else {
       return playerWon;

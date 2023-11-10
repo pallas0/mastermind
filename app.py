@@ -56,7 +56,7 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
-    game_timer = GameTimer(time=600, number=game.number, socket=socketio)
+    game_timer = GameTimer(time=5, number=game.number, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
