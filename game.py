@@ -5,7 +5,7 @@ class Game:
       """
       Initialize the Game class, generate and store the random number.
       """
-      self.guesses = guesses
+      self.guesses = []
       self.feedback = feedback
       self.player_won = player_won
       self.number_length = number_length

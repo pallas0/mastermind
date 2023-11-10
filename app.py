@@ -44,11 +44,13 @@ def generate_numbers():
       game_state = GameState(state=game.to_dict())
       db.session.add(game_state)
       db.session.commit()
-      game_timer = GameTimer(time=5, game_number=game.number, socket=socketio)
+      game_timer = GameTimer(time=600, game_number=game.number, socket=socketio)
 
-      timer_thread = threading.Thread(target=game_timer.run_timer)
-      timer_thread.daemon = True
-      timer_thread.start()
+      # timer_thread = threading.Thread(target=game_timer.run_timer)
+      # timer_thread.daemon = True
+      # timer_thread.start()
+      socketio.start_background_task(target=game_timer.run_timer)
+
 
       return jsonify({'game_id': game_state.id, 'attempts': game.attempts})
     except Exception as e:
