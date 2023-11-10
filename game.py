@@ -2,6 +2,9 @@ import requests
 
 class Game:
   def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10, game_over=False):
+      """
+      Initialize the Game class with the default parameters, generate and store the random number.
+      """
       self.guesses = guesses
       self.feedback = feedback
       self.player_won = player_won
@@ -9,18 +12,28 @@ class Game:
       self.attempts = attempts
       self.game_over = game_over
 
-      response = requests.get('https://www.random.org/integers', params={
-        'num': self.number_length,
-        'min': 0,
-        'max': 7,
-        'col': 1,
-        'base': 10,
-        'format': 'plain',
-        'rnd': 'new'
-    })
-      self.number = [int(num) for num in response.text.split()]
+      try:
+        response = requests.get('https://www.random.org/integers', params={
+          'num': self.number_length,
+          'min': 0,
+          'max': 7,
+          'col': 1,
+          'base': 10,
+          'format': 'plain',
+          'rnd': 'new'
+      })
+        if response.status_code != 200:
+          raise Exception(f"Request failed with status code {response.status_code}")
+        self.number = [int(num) for num in response.text.split()]
+      except Exception as e:
+        print(f"An error has occured: {e}")
+        self.number = []
+      
   
   def to_dict(self):
+    """
+    Converts the current game state to a dictionary.
+    """
     return {
       'number': self.number,
       'guesses': self.guesses,
@@ -33,6 +46,9 @@ class Game:
   
   @staticmethod
   def from_dict(data):
+    """
+    Creates a new game instance from a dictionary.
+    """
     game = Game()
     game.number = data['number']
     game.guesses = data['guesses']
@@ -45,6 +61,11 @@ class Game:
   
 
   def process_guess(self, guess):
+    """
+    Processes a player's guess, updates the game state, and returns feedback.
+    """
+    if not isinstance(guess, list) or not all(isinstance(i, int) for i in guess) or len(guess) != len(self.number):
+      raise ValueError("Guess must be a list of integers of the same length as the number.")
     correct_numbers, correct_locations = 0,0
     number_dict = {}
     
@@ -66,11 +87,17 @@ class Game:
     return feedback
 
   def update_history(self, guess, feedback):
+    """
+    Updates the game history with the latest guess and feedback.
+    """
     self.guesses.append(guess)
     self.feedback.append(feedback)
     self.attempts -= 1
 
   def check_gameover(self):
+    """
+    Checks if the game is over based on the latest guess or remaining attempts.
+    """
     if self.guesses[-1] == self.number :
       self.player_won.append(True)
       self.game_over = True
