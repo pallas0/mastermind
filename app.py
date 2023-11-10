@@ -15,18 +15,11 @@ from models import db, BestScores
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
 
-#db = SQLAlchemy(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
-
-# class BestScores(db.Model):
-#     __tablename__ = 'BestScores'
-#     id = db.Column(db.Integer, primary_key=True)
-#     player_name = db.Column(db.String(80))
-#     score = db.Column(db.Integer)
 
 
 @app.route('/best_scores', methods=['GET'])
@@ -48,12 +41,12 @@ def generate_numbers():
         'rnd': 'new'
     })
     game.number = [int(num) for num in response.text.split()]
-    game_timer = GameTimer(time=5, number=game.number, socket=socketio)
+    print(game.number)
+    game_timer = GameTimer(time=600, number=game.number, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
     timer_thread.start()
-    print(game.number)
 
     return jsonify({'attempts': game.attempts})
 
@@ -77,26 +70,10 @@ def compare_guess():
 
 @app.route('/update_best_score', methods=['POST'])
 def update_best_score():
-   try:
-      data = request.json
-      name = data['name']
-      score = data['new_score']
-
-      ordered_scores = BestScores.query.order_by(desc(BestScores.score))
-      highest_score_entry = ordered_scores.first()
-
-      if highest_score_entry and ordered_scores.count() >= 3:
-         db.session.delete(highest_score_entry)
-         db.session.commit()
-      
-      new_score = BestScores(player_name=name, score=score)
-      db.session.add(new_score)
-      db.session.commit()
-
-      return jsonify({'status': 200})
-   
-   except Exception as e:
-      return jsonify({'error': str(e), 'status': 500})
+    data = request.json
+    name = data['name']
+    score = data['new_score']
+    return jsonify(BestScores.update_best_score(name, score))
 
 
 @socketio.on('time_up', namespace='/game')

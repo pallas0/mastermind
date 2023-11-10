@@ -21,3 +21,22 @@ class BestScores(db.Model):
             for score in best_scores
         ]
         return best_scores_list
+    
+    @classmethod
+    def update_best_score(cls, name, new_score):
+        try:
+            ordered_scores = cls.query.order_by(desc(cls.score))
+            highest_score_entry = ordered_scores.first()
+
+            if highest_score_entry and ordered_scores.count() >= 3:
+                db.session.delete(highest_score_entry)
+                db.session.commit()
+            
+            new_score = cls(player_name=name, score=new_score)
+            db.session.add(new_score)
+            db.session.commit()
+
+            return {'status': 200}
+        
+        except Exception as e:
+            return {'error': str(e), 'status': 500}
