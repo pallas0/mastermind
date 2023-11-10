@@ -34,7 +34,7 @@ def generate_numbers():
     game_state = GameState(state=game.to_dict())
     db.session.add(game_state)
     db.session.commit()
-    game_timer = GameTimer(time=600, number=game.number, socket=socketio)
+    game_timer = GameTimer(time=600, game_number=game.number, socket=socketio)
 
     timer_thread = threading.Thread(target=game_timer.run_timer)
     timer_thread.daemon = True
@@ -79,7 +79,7 @@ def update_best_score():
 
 @socketio.on('time_up', namespace='/game')
 def time_up():
-   emit('time_up', {'number': game.number})
+   emit('time_up')
 
 
 if __name__ == "__main__":

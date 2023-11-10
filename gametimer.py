@@ -1,9 +1,10 @@
 from time import sleep
 
+
 class GameTimer:
-   def __init__(self, time=600, number=[], socket=[]):
+   def __init__(self, game_number, socket, time=600):
       self.time = time
-      self.number = number
+      self.game_number = game_number
       self.socket = socket
 
    def run_timer(self):
@@ -11,8 +12,9 @@ class GameTimer:
          sleep(1)
          self.time -= 1
 
-         if self.time == 0 and self.socket:
-            self.socket.emit('time_up', {'number': self.number}, namespace='/game')
+
+         if self.time == 0:
+            self.socket.emit('time_up', {'number': self.game_number}, namespace='/game')
             break
          
    def zero_time(self):
