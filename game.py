@@ -3,7 +3,7 @@ import requests
 class Game:
   def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10, game_over=False):
       """
-      Initialize the Game class with the default parameters, generate and store the random number.
+      Initialize the Game class, generate and store the random number.
       """
       self.guesses = guesses
       self.feedback = feedback
