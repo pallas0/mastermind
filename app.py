@@ -10,36 +10,28 @@ from time import sleep
 
 from game import Game
 from gametimer import GameTimer;
+from models import db, BestScores
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ameliarisner@localhost:5432/mastermind'
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-class BestScores(db.Model):
-    __tablename__ = 'BestScores'
-    id = db.Column(db.Integer, primary_key=True)
-    player_name = db.Column(db.String(80))
-    score = db.Column(db.Integer)
+# class BestScores(db.Model):
+#     __tablename__ = 'BestScores'
+#     id = db.Column(db.Integer, primary_key=True)
+#     player_name = db.Column(db.String(80))
+#     score = db.Column(db.Integer)
 
 
 @app.route('/best_scores', methods=['GET'])
 def best_scores():
-    best_scores = BestScores.query.order_by(BestScores.score).all()
-
-    best_scores_list = [
-        {
-          'id': score.id,
-          'player_name': score.player_name,
-          'score': score.score
-        }
-        for score in best_scores
-    ]
-    return jsonify({'best_scores': best_scores_list})
+    return jsonify({'best_scores': BestScores.get_all_scores()})
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
