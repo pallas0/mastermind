@@ -28,6 +28,9 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 def generate_numbers():
     """
     This endpoint generates numbers for the game, and starts the timer.
+    
+    Returns:
+        JSON: A JSON object containing the game id and the number of attempts.
     """
     try:
       # create a game object 
@@ -50,6 +53,9 @@ def generate_numbers():
 def compare_guess():
    """
     This endpoint compares the user's guess with the actual number.
+    
+    Returns:
+        JSON: A JSON object containing the feedback, whether the player won, and the number.
     """
    try:
       game_id = request.json.get('gameID')
@@ -82,6 +88,9 @@ def compare_guess():
 def best_scores():
     """
     This endpoint returns the best scores.
+    
+    Returns:
+        JSON: A JSON object containing the best scores.
     """
     try:
         return jsonify({'best_scores': BestScores.get_all_scores()}), 200
@@ -94,6 +103,9 @@ def update_best_score():
     This endpoint updates the best score. It is currently only
     called by the frontend when the user has one of the top 3 scores
     (ie least number of attempts to win) ever recorded
+    
+    Returns:
+        JSON: A JSON object containing the updated best score.
     """
     try:
       data = request.json
