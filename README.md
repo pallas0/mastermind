@@ -11,7 +11,7 @@ This project is a take on the classic game Mastermind. The game is built using F
 1. **Clone the Repository**
    - Begin by cloning the repository to your local machine using:
      ```
-     git clone [Repository URL]
+     git clone git@github.com:pallas0/mastermind.git
      ```
 
 2. **Set Up a Virtual Environment**
@@ -87,7 +87,7 @@ This project is a take on the classic game Mastermind. The game is built using F
 ## Code Structure
 
 ### Overview
-This project is structured to facilitate the Mastermind game through a combination of Flask backend, React frontend, and a PostgreSQL database. The game's logic is managed by Python on the server-side and React on the client-side, with the database handling game state and high scores.
+This project is structured through a combination of Flask backend, React frontend, and a PostgreSQL database. The game's logic is managed by Python on the server-side and React on the client-side, with the database handling game state and high scores.
 
 ### Backend (Flask)
 - **`app.py`**: This is the main Flask application file. It initializes the Flask app and configures it with necessary extensions like SQLAlchemy for database interaction, Migrate for database migration, and SocketIO for real-time communication.
@@ -119,8 +119,6 @@ This project is structured to facilitate the Mastermind game through a combinati
 ### Integration
 - The Flask backend and React frontend are integrated via RESTful APIs for game logic and state management, while real-time communication (e.g., timer updates) is handled using WebSocket connections provided by SocketIO.
 - PostgreSQL database is used by Flask to persist game states and best scores, ensuring data persistence across sessions.
-
-This structure enables a smooth and responsive gaming experience, with the backend handling game logic and database interactions, and the frontend providing an interactive user interface.
 
 ## Detailed Gameplay Instructions
 ### Game Rules
