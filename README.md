@@ -25,7 +25,7 @@ This project is a web-based version of the classic game Mastermind. The game is 
 - The bottom of the page features a leaderboard showcasing the three best overall scores. Players who guess the number in fewer attempts than the lowest score on the leaderboard can add their name to this table.
 
 ## Gameplay Screenshot
-[Section to be filled with a screenshot of the game]
+![mastermind_screenshot](https://github.com/pallas0/mastermind/assets/52135849/3a1be3bb-25a0-47fe-9a54-7ff876498333)
 
 ## Setup Instructions
 ### General/Flask Setup
@@ -106,7 +106,43 @@ This project is a web-based version of the classic game Mastermind. The game is 
 
 
 ## Code Structure
-[Details about the code structure of the project will be provided here]
+
+### Overview
+This project is structured to facilitate the Mastermind game through a combination of Flask backend, React frontend, and a PostgreSQL database. The game's logic is managed by Python on the server-side and React on the client-side, with the database handling game state and high scores.
+
+### Backend (Flask)
+- **`app.py`**: This is the main Flask application file. It initializes the Flask app and configures it with necessary extensions like SQLAlchemy for database interaction, Migrate for database migration, and SocketIO for real-time communication.
+  - **Endpoints**:
+    - `/generate`: Generates a new game, creates a game state, and starts the timer.
+    - `/compare_guess`: Compares the player's guess with the generated number and provides feedback.
+    - `/best_scores`: Fetches the best scores from the database.
+    - `/update_best_score`: Updates the best scores in the database.
+  - **Real-time Communication**:
+    - Uses Flask-SocketIO to handle the game timer.
+
+- **`game.py`**: Contains the `Game` class, which handles game logic like generating numbers, processing guesses, and managing game state.
+- **`gametimer.py`**: Manages the game timer, sending a 'time_up' event through SocketIO upon completion.
+- **`models.py`**: Defines SQLAlchemy models for storing game state (`GameState`) and best scores (`BestScores`).
+- **`timer_manager.py`**: Manages multiple game timers, ensuring that each game instance has its own independent timer and storing it in application memory.
+
+### Frontend (React)
+- **`App.js`**: The main React component managing the game's front-end logic.
+  - Handles game initialization, processing of guesses, and real-time updates from the server.
+  - Manages the game's state like the number of attempts, game status, player's guesses, and feedback.
+  - Interacts with the Flask backend via HTTP requests for game actions and WebSocket connections for real-time updates.
+- **`BestScoresTable.js` & `SubmitBestScore.js`**: Components for displaying the best scores and submitting a new high score.
+
+### Database (PostgreSQL)
+- Manages two primary data models: 
+  - `GameState` for storing the state of each game.
+  - `BestScores` for tracking the top scores.
+
+### Integration
+- The Flask backend and React frontend are integrated via RESTful APIs for game logic and state management, while real-time communication (e.g., timer updates) is handled using WebSocket connections provided by SocketIO.
+- PostgreSQL database is used by Flask to persist game states and best scores, ensuring data persistence across sessions.
+
+This structure enables a smooth and responsive gaming experience, with the backend handling game logic and database interactions, and the frontend providing an interactive user interface.
+
 
 ## Thought Process
 [Insights into the development process and decision-making will be added here]
