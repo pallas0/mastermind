@@ -12,6 +12,7 @@ from time import sleep
 from game import Game
 from gametimer import GameTimer;
 from models import db, BestScores, GameState
+from timer_manager import timer_manager
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
@@ -39,19 +40,17 @@ def generate_numbers():
     This endpoint generates numbers for the game, and starts the timer.
     """
     try:
-      global game_timer
+      # create a game object 
       game = Game()
       game_state = GameState(state=game.to_dict())
       db.session.add(game_state)
       db.session.commit()
-      game_timer = GameTimer(time=600, game_number=game.number, socket=socketio)
 
-      # timer_thread = threading.Thread(target=game_timer.run_timer)
-      # timer_thread.daemon = True
-      # timer_thread.start()
+      # create a new timer associated with the game
+      game_timer = timer_manager.create_timer(game_state.id, game.number, socketio, time=10)
       socketio.start_background_task(target=game_timer.run_timer)
 
-
+      # return response
       return jsonify({'game_id': game_state.id, 'attempts': game.attempts})
     except Exception as e:
       return jsonify({'error': str(e)}), 500
@@ -79,9 +78,8 @@ def compare_guess():
       player_won = game.player_won
       number = []
 
-      print(player_won)
+      game_timer = timer_manager.get_timer(game_id)
       if player_won:
-         print("hit")
          game_timer.zero_time()
          number = game.number
 
