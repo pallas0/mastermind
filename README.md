@@ -28,7 +28,82 @@ This project is a web-based version of the classic game Mastermind. The game is 
 [Section to be filled with a screenshot of the game]
 
 ## Setup Instructions
-[Instructions to set up the game will be provided here]
+### General/Flask Setup
+1. **Clone the Repository**
+   - Begin by cloning the repository to your local machine using:
+     ```
+     git clone [Repository URL]
+     ```
+
+2. **Set Up a Virtual Environment**
+   - Navigate to the cloned directory and create a virtual environment:
+     ```
+     python -m venv venv
+     ```
+   - Activate the virtual environment:
+     - On Windows:
+       ```
+       venv\Scripts\activate
+       ```
+     - On Unix or MacOS:
+       ```
+       source venv/bin/activate
+       ```
+
+3. **Install Requirements**
+   - Install all required packages using pip:
+     ```
+     pip install -r requirements.txt
+     ```
+
+4. **Run the Backend**
+   - Start the Flask server with:
+     ```
+     flask run
+     ```
+
+### Postgresql Setup
+1. **Setting Up a Local Postgresql Database**
+   - Install PostgreSQL and create a new database:
+     ```
+     createdb [database_name]
+     ```
+
+2. **Configure Database URI**
+   - Determine your database URI, which typically follows the format:
+     ```
+     postgresql://[user]:[password]@localhost/[database_name]
+     ```
+   - Update the `app.config` line in the `app.py` file in Flask to use this URI:
+     ```
+     app.config['SQLALCHEMY_DATABASE_URI'] = '[Your Database URI]'
+     ```
+
+3. **Run Data Table Migrations**
+   - Apply database migrations to set up the necessary tables:
+     ```
+     flask db upgrade
+     ```
+
+### React Frontend Setup
+1. **Navigate to Frontend Directory**
+   - Change to the frontend directory:
+     ```
+     cd mastermind-frontend
+     ```
+
+2. **Install Dependencies**
+   - Install all necessary dependencies using npm:
+     ```
+     npm install
+     ```
+
+3. **Start the Frontend Application**
+   - Run the React application with:
+     ```
+     npm start
+     ```
+
 
 ## Code Structure
 [Details about the code structure of the project will be provided here]
