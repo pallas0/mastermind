@@ -108,7 +108,7 @@ function App() {
       )}
       <p>Attempts: {attempts}</p>
       {gameOver && displayScoreSubmission() && (
-      <SubmitBestScore numberOfAttempts={attempts} />
+      <SubmitBestScore numberOfAttempts={attempts} gameID={gameID} />
     )}
       <div className="guess-feedback">
         <div className="guesses">

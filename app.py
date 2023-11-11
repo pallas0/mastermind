@@ -24,16 +24,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 
-@app.route('/best_scores', methods=['GET'])
-def best_scores():
-    """
-    This endpoint returns the best scores.
-    """
-    try:
-        return jsonify({'best_scores': BestScores.get_all_scores()}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
     """
@@ -43,11 +33,12 @@ def generate_numbers():
       # create a game object 
       game = Game()
       game_state = GameState(state=game.to_dict())
+      print(game.number)
       db.session.add(game_state)
       db.session.commit()
 
       # create a new timer associated with the game
-      game_timer = timer_manager.create_timer(game_state.id, game.number, socketio, time=10)
+      game_timer = timer_manager.create_timer(game_state.id, game.number, socketio, time=300)
       socketio.start_background_task(target=game_timer.run_timer)
 
       # return response
@@ -87,16 +78,29 @@ def compare_guess():
    except Exception as e:
       return jsonify({'error': str(e)}), 500
 
+@app.route('/best_scores', methods=['GET'])
+def best_scores():
+    """
+    This endpoint returns the best scores.
+    """
+    try:
+        return jsonify({'best_scores': BestScores.get_all_scores()}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/update_best_score', methods=['POST'])
 def update_best_score():
     """
-    This endpoint updates the best score.
+    This endpoint updates the best score. It is currently only
+    called by the frontend when the user has one of the top 3 scores
+    (ie least number of attempts to win) ever recorded
     """
     try:
       data = request.json
       name = data['name']
       score = data['new_score']
-      return jsonify(BestScores.update_best_score(name, score))
+      game_id = data['gameID']
+      return jsonify(BestScores.update_best_score(name, score, game_id))
     except Exception as e:
        return jsonify({'error': str(e)}), 500
 
