@@ -4,6 +4,15 @@ class Game:
   def __init__(self, number=[], guesses=[], feedback=[], player_won=[], number_length=4, attempts=10, game_over=False):
       """
       Initialize the Game class, generate and store the random number.
+      
+      Args:
+          number (list): The number to guess.
+          guesses (list): The list of guesses made.
+          feedback (list): The list of feedback for each guess.
+          player_won (list): The list of boolean values indicating if the player has won.
+          number_length (int): The length of the number to guess.
+          attempts (int): The number of attempts left.
+          game_over (bool): Indicates if the game is over.
       """
       self.guesses = []
       self.feedback = feedback
@@ -33,6 +42,9 @@ class Game:
   def to_dict(self):
     """
     Converts the current game state to a dictionary.
+    
+    Returns:
+        dict: The current game state.
     """
     return {
       'number': self.number,
@@ -48,6 +60,12 @@ class Game:
   def from_dict(data):
     """
     Creates a new game instance from a dictionary.
+    
+    Args:
+        data (dict): The game state.
+    
+    Returns:
+        Game: The game instance.
     """
     game = Game()
     game.number = data['number']
@@ -63,6 +81,12 @@ class Game:
   def process_guess(self, guess):
     """
     Processes a player's guess, updates the game state, and returns feedback.
+    
+    Args:
+        guess (list): The player's guess.
+    
+    Returns:
+        str: The feedback for the guess.
     """
     if not isinstance(guess, list) or not all(isinstance(i, int) for i in guess) or len(guess) != len(self.number):
       raise ValueError("Guess must be a list of integers of the same length as the number.")
