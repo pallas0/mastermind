@@ -40,7 +40,7 @@ def generate_numbers():
     """
     try:
       global game_timer
-      game = Game(number=[], guesses=[], feedback=[], player_won=[])
+      game = Game()
       game_state = GameState(state=game.to_dict())
       db.session.add(game_state)
       db.session.commit()
