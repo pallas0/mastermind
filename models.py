@@ -1,7 +1,95 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
+import requests
+from typing import List, Optional, Tuple
+import random
+from flask import current_app
 
 db = SQLAlchemy()
+
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    secret_code = db.Column(db.String(4), nullable=False)
+    guesses = db.Column(db.PickleType, default=[])
+    feedback = db.Column(db.PickleType, default=[])
+    player_won = db.Column(db.Boolean, default=False)
+    number_length = db.Column(db.Integer, default=4)
+    attempts = db.Column(db.Integer, default=10)
+    game_over = db.Column(db.Boolean, default=False)
+
+    def __init__(self, *args, **kwargs):
+        super(Game, self).__init__(*args, **kwargs)
+        self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
+        current_app.logger.info(f"Secret Code: {self.secret_code}")
+
+    def generate_secret_code(self) -> List[int]:
+      try:
+        response = requests.get('https://www.random.org/integers', params={
+          'num': self.number_length,
+          'min': 0,
+          'max': 7,
+          'col': 1,
+          'base': 10,
+          'format': 'plain',
+          'rnd': 'new'
+      })
+        if response.status_code != 200:
+          raise Exception(f"Request failed with status code {response.status_code}")
+        if 'text/plain' not in response.headers.get('Content-Type', ''):
+            raise Exception("Invalid response content type")
+        return [int(num) for num in response.text.split()]
+      except Exception as e:
+        print(f"An error has occured: {e}")
+        return [random.randint(0, 7) for _ in range(4)]
+
+    def process_guess(self, guess: List[int]) -> str:
+        """
+        Processes a player's guess, updates the game state, and returns feedback.
+        
+        Args:
+            guess (list): The player's guess.
+        
+        Returns:
+            str: The feedback for the guess.
+        """
+        if not isinstance(guess, list) or not all(isinstance(i, int) for i in guess) or len(guess) != len(self.secret_code):
+            raise ValueError("Guess must be a list of integers of the same length as the number.")
+        correct_numbers, correct_locations = 0,0
+        number_dict = {}
+        
+        secret_code_list = [int(digit) for digit in self.secret_code]
+
+        for elem in secret_code_list :
+            number_dict[elem] = number_dict.get(elem,0) + 1
+        
+        for i in range(len(secret_code_list)):
+            if guess[i] == secret_code_list [i]:
+                correct_locations += 1
+            if guess[i] in number_dict:
+                number_dict[guess[i]] -= 1
+                if number_dict[guess[i]] == 0:
+                    number_dict.pop(guess[i])
+                correct_numbers += 1
+
+        feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
+        self.update_history(guess, feedback)
+        self.check_gameover()
+        return feedback
+
+    def update_history(self, guess, feedback):
+        self.guesses.append(guess)
+        self.feedback.append(feedback)
+        self.attempts -= 1
+
+    # potential bug here because we made player one a boolean instead of a 3 state thing
+    def check_gameover(self):
+        last_guess = [int(digit) for digit in self.secret_code]
+        if self.guesses[-1] == last_guess:
+            self.player_won = True
+            self.game_over = True
+        elif self.attempts == 0:
+            self.game_over = True
+
 
 class BestScores(db.Model):
     __tablename__ = 'BestScores'
@@ -53,8 +141,8 @@ class BestScores(db.Model):
             print(str(e))
             return {'error': str(e), 'status': 500}
         
-class GameState(db.Model):
-    __tablename__ = 'game_state'
-    id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.PickleType)
+# class GameState(db.Model):
+#     __tablename__ = 'game_state'
+#     id = db.Column(db.Integer, primary_key=True)
+#     state = db.Column(db.PickleType)
 

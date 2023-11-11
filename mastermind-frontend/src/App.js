@@ -67,10 +67,10 @@ function App() {
       setAttempts(attempts-1)
       setGuesses([...guesses, guess])
       setFeedback([...feedback, response.data.feedback])
-      if (response.data.player_won.length) {
+      if (response.data.game_over) {
         setSecretNumber(response.data.number)
         setGameOver(true)
-        setPlayerWon(response.data.player_won[0])
+        setPlayerWon(response.data.player_won)
       }
       setGuess("");
     })

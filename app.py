@@ -9,9 +9,8 @@ from sqlalchemy import desc
 import threading
 from time import sleep
 
-from game import Game
 from gametimer import GameTimer;
-from models import db, BestScores, GameState
+from models import db, Game, BestScores
 from timer_manager import timer_manager
 
 app = Flask(__name__)
@@ -35,17 +34,16 @@ def generate_numbers():
     try:
       # create a game object 
       game = Game()
-      game_state = GameState(state=game.to_dict())
-      print(game.number)
-      db.session.add(game_state)
+      db.session.add(game)
       db.session.commit()
 
       # create a new timer associated with the game
-      game_timer = timer_manager.create_timer(game_state.id, game.number, socketio, time=300)
+      code = [int(digit) for digit in game.secret_code]
+      game_timer = timer_manager.create_timer(game.id, code, socketio, time=5)
       socketio.start_background_task(target=game_timer.run_timer)
 
       # return response
-      return jsonify({'game_id': game_state.id, 'attempts': game.attempts})
+      return jsonify({'game_id': game.id, 'attempts': game.attempts})
     except Exception as e:
       return jsonify({'error': str(e)}), 500
 
@@ -55,34 +53,39 @@ def compare_guess():
     This endpoint compares the user's guess with the actual number.
     
     Returns:
-        JSON: A JSON object containing the feedback, whether the player won, and the number.
+        JSON: A JSON object containing the feedback, whether the game is over,
+        whether the player won, and the secret number if indeed game is over.
     """
-   try:
-      game_id = request.json.get('gameID')
-      game_state = GameState.query.get(game_id)
-      if not game_state:
-         return jsonify({'error': 'Game not found'}), 400
-      
-      game = Game.from_dict(game_state.state)
+   # try:
+   data = request.json
+   game_id = data.get('gameID')
+   guess = [int(char) for char in data.get('guess')]
 
-      guess = request.json.get('guess')
-      guess = [int(char) for char in guess]
-      feedback = game.process_guess(guess)
+   game = Game.query.get(game_id)
+   if not game:
+      return jsonify({'error': 'Game not found'}), 400
 
-      game_state.state = game.to_dict()
-      db.session.commit()
+   feedback = game.process_guess(guess)
 
-      player_won = game.player_won
-      number = []
-
-      game_timer = timer_manager.get_timer(game_id)
-      if player_won:
+   # zero the timer if the game is over
+   game_timer = timer_manager.get_timer(game_id)
+   if game.game_over and game_timer:
          game_timer.zero_time()
-         number = game.number
+   
+   # save the game to the db
+   db.session.commit()
 
-      return jsonify({'feedback': feedback, 'player_won': player_won, 'number': number})
-   except Exception as e:
-      return jsonify({'error': str(e)}), 500
+   return jsonify({
+      'feedback': feedback,
+      'game_over': game.game_over,
+      'player_won': game.player_won,
+      'number': game.secret_code if game.game_over else ""
+   })
+   # except ValueError as ve:
+   #    return jsonify({'error': str(ve)}), 400
+   # except Exception as e:
+   #    return jsonify({'error': str(e)}), 500
+
 
 @app.route('/best_scores', methods=['GET'])
 def best_scores():
