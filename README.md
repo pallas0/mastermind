@@ -141,4 +141,4 @@ This project is structured through a combination of Flask backend, React fronten
 - The bottom of the page features a leaderboard showcasing the three best overall scores. Players who guess the number in fewer attempts than the lowest score on the leaderboard can add their name to this table.
 
 ## Thought Process
-[Insights into the development process and decision-making will be added here]
+[tbd]
