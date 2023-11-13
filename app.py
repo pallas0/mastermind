@@ -41,11 +41,11 @@ def generate_numbers():
       game = Game()
       db.session.add(game)
       db.session.commit()
-      logger.debug(f"New Game Instance: {game}")
+      logger.debug(f"New Game DB Instance: {game}")
 
       # create a new timer associated with the game
       code = [int(digit) for digit in game.secret_code]
-      game_timer = timer_manager.create_timer(game.id, code, socketio, time=120)
+      game_timer = timer_manager.create_timer(game.id, code, socketio, time=600)
       socketio.start_background_task(target=game_timer.run_timer)
 
       # return response
