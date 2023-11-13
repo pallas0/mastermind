@@ -25,7 +25,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-@app.route('/generate', methods=['GET'])
+@app.route('/generate', methods=['POST'])
 def generate_numbers():
     """
     This endpoint generates numbers for the game, and starts the timer.
@@ -35,7 +35,10 @@ def generate_numbers():
     """
     try:
       # create a game object 
-      game = Game()
+      data = request.json
+      difficulty = int(data.get('difficulty'))
+      logger.debug(f"data: {data}")
+      game = Game(game_mode=difficulty)
       db.session.add(game)
       db.session.commit()
       logger.debug(f"New Game DB Instance: {game}")

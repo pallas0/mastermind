@@ -8,30 +8,51 @@ from flask import current_app
 db = SQLAlchemy()
 
 class Game(db.Model):
-    DEFAULT_SECRET_CODE_LENGTH = 4
-    DEFAULT_ATTEMPTS = 10
-    DEFAULT_GAME_MODE = 1 # 0 is easy, 1 is medium, 2 is hard
+
+    DEFAULT_SECRET_CODE_LENGTH_EASY = 3
+    DEFAULT_ATTEMPTS_EASY = 15
+
+    DEFAULT_SECRET_CODE_LENGTH_MEDIUM = 4
+    DEFAULT_ATTEMPTS_MEDIUM = 10
+
+    DEFAULT_SECRET_CODE_LENGTH_HARD = 5
+    DEFAULT_ATTEMPTS_HARD = 10
+    
+    GAME_MODES = {
+        "easy": 0,
+        "medium": 1,
+        "hard": 2
+    }
 
     id = db.Column(db.Integer, primary_key=True)
-    secret_code = db.Column(db.String(DEFAULT_SECRET_CODE_LENGTH), nullable=False)
+    secret_code = db.Column(db.String(5), nullable=False)
     guesses = db.Column(db.PickleType, default=[])
     feedback = db.Column(db.PickleType, default=[])
     player_won = db.Column(db.Boolean, default=False)
-    secret_code_length = db.Column(db.Integer, default=DEFAULT_SECRET_CODE_LENGTH)
-    attempts = db.Column(db.Integer, default=10)
+    secret_code_length = db.Column(db.Integer)
+    attempts = db.Column(db.Integer)
     game_over = db.Column(db.Boolean, default=False)
-    game_mode = db.Column(db.Integer, default=1)
+    game_mode = db.Column(db.Integer)
 
-    def __init__(self, secret_code_length=None, attempts=None):
-        self.secret_code_length = secret_code_length if secret_code_length is not None else self.DEFAULT_SECRET_CODE_LENGTH
-        self.attempts = attempts if attempts is not None else self.DEFAULT_ATTEMPTS
-        # Initialize other attributes with default values
-        self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
+    def __init__(self, game_mode):
         self.guesses = []
         self.feedback = []
         self.player_won = False
         self.game_over = False
-        self.game_mode = self.DEFAULT_GAME_MODE
+        self.game_mode = game_mode if game_mode is not None else self.DEFAULT_GAME_MODE
+
+        if self.game_mode == self.GAME_MODES["easy"]:
+            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH_EASY
+            self.attempts = self.DEFAULT_ATTEMPTS_EASY
+        elif self.game_mode == self.GAME_MODES["medium"]:
+            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH_MEDIUM
+            self.attempts = self.DEFAULT_ATTEMPTS_MEDIUM
+        else:
+            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH_HARD
+            self.attempts = self.DEFAULT_ATTEMPTS_HARD
+
+        self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
+        
         current_app.logger.debug(f"Initialized Game: {self}")
 
     def __str__(self):
@@ -65,7 +86,7 @@ class Game(db.Model):
         return [int(num) for num in response.text.split()]
       except Exception as e:
         print(f"An error has occured: {e}")
-        return [random.randint(0, 7) for _ in range(4)]
+        return [random.randint(0, 7) for _ in range(self.secret_code_length)]
 
     def process_guess(self, guess: List[int]) -> str:
         """

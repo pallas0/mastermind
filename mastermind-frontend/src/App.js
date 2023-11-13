@@ -7,6 +7,7 @@ import BestScoresTable from './BestScoresTable';
 import SubmitBestScore from './SubmitBestScore';
 
 function App() {
+  const [difficulty, setDifficulty] = useState("")
   const [guess, setGuess] = useState("")
   const [guesses, setGuesses] = useState([]);
   const [feedback, setFeedback] = useState([]);
@@ -38,7 +39,9 @@ function App() {
   }, []);
 
   const startGame = async() => {
-    axios.get('http://127.0.0.1:5000/generate')
+    axios.post('http://127.0.0.1:5000/generate', {
+      difficulty: difficulty
+    })
     .then(response => {
       console.log(response.data)
       setGameStarted(true)
@@ -54,10 +57,16 @@ function App() {
   }
 
   const submitGuess = () => {
-    if (guess.length !== 4 || !/^[0-9]{4}$/.test(guess)) {
-      alert("Please enter a 4-digit guess using only numeric characters.");
-      return;
-    }
+    const guessLength = {
+      '0': 3,
+      '1': 4,
+      '2': 5
+  }
+    // console.log(guessLength[difficulty])
+    // // if (guess.length !== guessLength[difficulty] || !/^[0-9]{4}$/.test(guess)) {
+    // //   alert(`Please enter a 4-digit guess using only numeric characters.`);
+    // //   return;
+    // // }
 
     axios.post('http://127.0.0.1:5000/compare_guess', {
       guess: guess,
@@ -89,6 +98,12 @@ function App() {
 
   return (
     <div className="App">
+        <input
+        type="text"
+        placeholder="Enter difficulty"
+        value={difficulty}
+        onChange={(e) => setDifficulty(e.target.value)}
+      />
       <button onClick={startGame}>Generate Number + Start Game</button>
       <input
         type="text"
