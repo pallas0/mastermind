@@ -77,6 +77,7 @@ def compare_guess():
    game_timer = timer_manager.get_timer(game_id)
    if game.game_over and game_timer:
          game_timer.zero_time()
+         timer_manager.remove_timer(game_id)
    
    # save the game to the db
    db.session.commit()

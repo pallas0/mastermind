@@ -4,7 +4,7 @@ from gametimer import GameTimer
 
 class TimerManager:
 
-    DEFAULT_TIME_LENGTH = 600
+    DEFAULT_TIME_LENGTH = 20
     def __init__(self):
         self.timers = {}
         self.lock = threading.Lock()
