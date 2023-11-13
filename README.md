@@ -123,6 +123,13 @@ This project is structured through a combination of Flask backend, React fronten
 - The Flask backend and React frontend are integrated via RESTful APIs for game logic and state management, while real-time communication (e.g., timer updates) is handled using WebSocket connections provided by SocketIO.
 - PostgreSQL database is used by Flask to persist game states and best scores, ensuring data persistence across sessions.
 
+## Design Decisions and Architecture
+Most of the game state and functionality is stored in the Game class, which is backed by a Postgresql model. 
+
+To create the high score functionality, I decided to create a separate BestScores data model which contains only the top 3 scores (wins with the least number of attemps) ever recorded. When a user gets a score that is better than the existing top 3 scores, we evict the worst score and then insert the user's game score. I chose to keep game scores here rather than on the Game model to avoid having to sort/fetch the top 3 scores across all games every time we show the high scores (/best_scores endpoint). 
+
+For the timer, I decided to build the timer/time-counting functionality on the serverside (instead of a much simplier client-side implementation) so that a user wouldn't be able to "cheat' the time countdown by altering the client-end state. When a game is created, a timer is created via TimerManager and starts running on secondary thread. When the time is up, the frontend gets an alert via a websocket.
+ 
 ## Detailed Gameplay Instructions
 ### Game Rules
 - At the start of the game, the computer will randomly select a pattern of four numbers. These numbers are chosen from a range of 0 to 7 and can include duplicates.
