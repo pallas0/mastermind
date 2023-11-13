@@ -2,7 +2,9 @@ from time import sleep
 
 
 class GameTimer:
-   def __init__(self, game_number, socket, time=600):
+
+   
+   def __init__(self, game_number, socket, time):
       """
         Initialize the GameTimer object.
 

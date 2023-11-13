@@ -45,7 +45,7 @@ def generate_numbers():
 
       # create a new timer associated with the game
       code = [int(digit) for digit in game.secret_code]
-      game_timer = timer_manager.create_timer(game.id, code, socketio, time=600)
+      game_timer = timer_manager.create_timer(game.id, code, socketio)
       socketio.start_background_task(target=game_timer.run_timer)
 
       # return response

@@ -3,11 +3,13 @@ import threading
 from gametimer import GameTimer
 
 class TimerManager:
+
+    DEFAULT_TIME_LENGTH = 600
     def __init__(self):
         self.timers = {}
         self.lock = threading.Lock()
 
-    def create_timer(self, game_id, game_number, socket, time=600):
+    def create_timer(self, game_id, game_number, socket, time=DEFAULT_TIME_LENGTH):
         with self.lock:
             if game_id not in self.timers:
                 self.timers[game_id] = GameTimer(game_number, socket, time)
