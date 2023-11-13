@@ -10,24 +10,29 @@ db = SQLAlchemy()
 class Game(db.Model):
     DEFAULT_SECRET_CODE_LENGTH = 4
     DEFAULT_ATTEMPTS = 10
+    DEFAULT_GAME_MODE = 1 # 0 is easy, 1 is medium, 2 is hard
 
-    id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each game
-    secret_code = db.Column(db.String(DEFAULT_SECRET_CODE_LENGTH), nullable=False)  # The secret code that the player needs to guess
-    guesses = db.Column(db.PickleType, default=[])  # List of guesses made by the player
-    feedback = db.Column(db.PickleType, default=[])  # Feedback provided to the player for each guess
-    player_won = db.Column(db.Boolean, default=False)  # Indicates whether the player has won the game
-    secret_code_length = db.Column(db.Integer, default=DEFAULT_SECRET_CODE_LENGTH)  # The length of the secret code
-    attempts = db.Column(db.Integer, default=10)  # The number of attempts the player has left
-    game_over = db.Column(db.Boolean, default=False)  # Indicates whether the game is over
+    id = db.Column(db.Integer, primary_key=True)
+    secret_code = db.Column(db.String(DEFAULT_SECRET_CODE_LENGTH), nullable=False)
+    guesses = db.Column(db.PickleType, default=[])
+    feedback = db.Column(db.PickleType, default=[])
+    player_won = db.Column(db.Boolean, default=False)
+    secret_code_length = db.Column(db.Integer, default=DEFAULT_SECRET_CODE_LENGTH)
+    attempts = db.Column(db.Integer, default=10)
+    game_over = db.Column(db.Boolean, default=False)
+    game_mode = db.Column(db.Integer, default=1)
 
-    def __init__(self, *args, **kwargs):
-        if 'secret_code_length' not in kwargs:
-            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH
-        if 'attempts' not in kwargs:
-            self.attempts = self.DEFAULT_ATTEMPTS
-        super(Game, self).__init__(*args, **kwargs)
+    def __init__(self, secret_code_length=None, attempts=None):
+        self.secret_code_length = secret_code_length if secret_code_length is not None else self.DEFAULT_SECRET_CODE_LENGTH
+        self.attempts = attempts if attempts is not None else self.DEFAULT_ATTEMPTS
+        # Initialize other attributes with default values
         self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
-        current_app.logger.debug(f"Initialized Game: {self}") 
+        self.guesses = []
+        self.feedback = []
+        self.player_won = False
+        self.game_over = False
+        self.game_mode = self.DEFAULT_GAME_MODE
+        current_app.logger.debug(f"Initialized Game: {self}")
 
     def __str__(self):
         """

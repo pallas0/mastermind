@@ -6,7 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import psycopg2, requests
 from sqlalchemy import desc
-import threading
 
 from models import db, Game, BestScores
 from timer_manager import timer_manager
