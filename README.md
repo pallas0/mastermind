@@ -143,5 +143,3 @@ This project is structured through a combination of Flask backend, React fronten
 - The player’s guess history and feedback from the computer are displayed after each guess, along with the remaining number of attempts.
 - The bottom of the page features a leaderboard showcasing the three best overall scores. Players who guess the number in fewer attempts than the lowest score on the leaderboard can add their name to this table.
 
-## Thought Process
-[tbd]
