@@ -20,14 +20,14 @@ class Game(db.Model):
     attempts = db.Column(db.Integer, default=10)  # The number of attempts the player has left
     game_over = db.Column(db.Boolean, default=False)  # Indicates whether the game is over
 
-    def __init__(self, *args, **kwargs):
-        if 'secret_code_length' not in kwargs:
-            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH
-        if 'attempts' not in kwargs:
-            self.attempts = self.DEFAULT_ATTEMPTS
-        super(Game, self).__init__(*args, **kwargs)
+    def __init__(self, secret_code_length=None, attempts=None):
+        self.secret_code_length = secret_code_length if secret_code_length is not None else self.DEFAULT_SECRET_CODE_LENGTH
+        self.attempts = attempts if attempts is not None else self.DEFAULT_ATTEMPTS
         self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
-        current_app.logger.debug(f"Initialized Game: {self}") 
+        self.guesses = []
+        self.feedback = []
+        self.player_won = False
+        self.game_over = False
 
     def __str__(self):
         """
