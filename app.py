@@ -7,9 +7,7 @@ import os
 import psycopg2, requests
 from sqlalchemy import desc
 import threading
-from time import sleep
 
-from gametimer import GameTimer;
 from models import db, Game, BestScores
 from timer_manager import timer_manager
 
