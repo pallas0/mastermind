@@ -13,6 +13,8 @@ from gametimer import GameTimer;
 from models import db, Game, BestScores
 from timer_manager import timer_manager
 
+import logging
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 
@@ -22,6 +24,9 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
+# setup logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 @app.route('/generate', methods=['GET'])
 def generate_numbers():
@@ -36,10 +41,11 @@ def generate_numbers():
       game = Game()
       db.session.add(game)
       db.session.commit()
+      logger.debug(f"New Game Instance: {game}")
 
       # create a new timer associated with the game
       code = [int(digit) for digit in game.secret_code]
-      game_timer = timer_manager.create_timer(game.id, code, socketio, time=5)
+      game_timer = timer_manager.create_timer(game.id, code, socketio, time=120)
       socketio.start_background_task(target=game_timer.run_timer)
 
       # return response

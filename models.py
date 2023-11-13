@@ -8,24 +8,42 @@ from flask import current_app
 db = SQLAlchemy()
 
 class Game(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    secret_code = db.Column(db.String(4), nullable=False)
-    guesses = db.Column(db.PickleType, default=[])
-    feedback = db.Column(db.PickleType, default=[])
-    player_won = db.Column(db.Boolean, default=False)
-    number_length = db.Column(db.Integer, default=4)
-    attempts = db.Column(db.Integer, default=10)
-    game_over = db.Column(db.Boolean, default=False)
+    DEFAULT_SECRET_CODE_LENGTH = 4
+    DEFAULT_ATTEMPTS = 10
+
+    id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each game
+    secret_code = db.Column(db.String(DEFAULT_SECRET_CODE_LENGTH), nullable=False)  # The secret code that the player needs to guess
+    guesses = db.Column(db.PickleType, default=[])  # List of guesses made by the player
+    feedback = db.Column(db.PickleType, default=[])  # Feedback provided to the player for each guess
+    player_won = db.Column(db.Boolean, default=False)  # Indicates whether the player has won the game
+    secret_code_length = db.Column(db.Integer, default=DEFAULT_SECRET_CODE_LENGTH)  # The length of the secret code
+    attempts = db.Column(db.Integer, default=10)  # The number of attempts the player has left
+    game_over = db.Column(db.Boolean, default=False)  # Indicates whether the game is over
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('secret_code_length', self.DEFAULT_SECRET_CODE_LENGTH)
+        kwargs.setdefault('attempts', self.DEFAULT_ATTEMPTS)
         super(Game, self).__init__(*args, **kwargs)
         self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
-        current_app.logger.info(f"Secret Code: {self.secret_code}")
+        current_app.logger.debug(f"Initialized Game: {self}") 
+
+    def __str__(self):
+        """
+        Create a string representation of the current state of the game.
+        """
+        return (f"Game ID: {self.id}, "
+                f"Secret Code: {self.secret_code}, "
+                f"Guesses: {self.guesses}, "
+                f"Feedback: {self.feedback}, "
+                f"Player Won: {self.player_won}, "
+                f"Secret Code Length: {self.secret_code_length}, "
+                f"Attempts Left: {self.attempts}, "
+                f"Game Over: {self.game_over}")
 
     def generate_secret_code(self) -> List[int]:
       try:
         response = requests.get('https://www.random.org/integers', params={
-          'num': self.number_length,
+          'num': self.secret_code_length,
           'min': 0,
           'max': 7,
           'col': 1,
@@ -34,9 +52,9 @@ class Game(db.Model):
           'rnd': 'new'
       })
         if response.status_code != 200:
-          raise Exception(f"Request failed with status code {response.status_code}")
+          raise Exception(f"Secret generation: API request failed with status code {response.status_code}")
         if 'text/plain' not in response.headers.get('Content-Type', ''):
-            raise Exception("Invalid response content type")
+            raise Exception("Secret generation: API returns invalid response content type")
         return [int(num) for num in response.text.split()]
       except Exception as e:
         print(f"An error has occured: {e}")
@@ -140,7 +158,7 @@ class BestScores(db.Model):
         except Exception as e:
             print(str(e))
             return {'error': str(e), 'status': 500}
-        
+
 # class GameState(db.Model):
 #     __tablename__ = 'game_state'
 #     id = db.Column(db.Integer, primary_key=True)
