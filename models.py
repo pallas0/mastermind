@@ -21,8 +21,10 @@ class Game(db.Model):
     game_over = db.Column(db.Boolean, default=False)  # Indicates whether the game is over
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('secret_code_length', self.DEFAULT_SECRET_CODE_LENGTH)
-        kwargs.setdefault('attempts', self.DEFAULT_ATTEMPTS)
+        if 'secret_code_length' not in kwargs:
+            self.secret_code_length = self.DEFAULT_SECRET_CODE_LENGTH
+        if 'attempts' not in kwargs:
+            self.attempts = self.DEFAULT_ATTEMPTS
         super(Game, self).__init__(*args, **kwargs)
         self.secret_code = ''.join(str(num) for num in self.generate_secret_code())
         current_app.logger.debug(f"Initialized Game: {self}") 
