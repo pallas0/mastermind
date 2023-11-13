@@ -103,9 +103,8 @@ This project is structured through a combination of Flask backend, React fronten
   - **Real-time Communication**:
     - Uses Flask-SocketIO to handle the game timer.
 
-- **`game.py`**: Contains the `Game` class, which handles game logic like generating numbers, processing guesses, and managing game state.
 - **`gametimer.py`**: Manages the game timer, sending a 'time_up' event through SocketIO upon completion.
-- **`models.py`**: Defines SQLAlchemy models for storing game state (`GameState`) and best scores (`BestScores`).
+- **`models.py`**: Defines SQLAlchemy models for storing games (`Game`) and best scores (`BestScores`). The Game class has methods for generating the secret code, processing guesses, and checking for gameover.  The BestScores class has methods for returning and updating the best scores.
 - **`timer_manager.py`**: Manages multiple game timers, ensuring that each game instance has its own independent timer and storing it in application memory.
 
 ### Frontend (React)
@@ -117,7 +116,7 @@ This project is structured through a combination of Flask backend, React fronten
 
 ### Database (PostgreSQL)
 - Manages two primary data models: 
-  - `GameState` for storing the state of each game.
+  - `Game` for generating and storing each game.
   - `BestScores` for tracking the top scores.
 
 ### Integration
