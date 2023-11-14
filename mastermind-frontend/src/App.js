@@ -98,12 +98,14 @@ function App() {
 
   return (
     <div className="App">
-        <input
-        type="text"
-        placeholder="Enter difficulty"
+        <select
         value={difficulty}
         onChange={(e) => setDifficulty(e.target.value)}
-      />
+      >
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
       <button onClick={startGame}>Generate Number + Start Game</button>
       <input
         type="text"
