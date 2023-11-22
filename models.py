@@ -83,13 +83,16 @@ class Game(db.Model):
             number_dict[elem] = number_dict.get(elem,0) + 1
         
         for i in range(len(secret_code_list)):
-            if guess[i] == secret_code_list [i]:
+            if guess[i] == secret_code_list [i]: #position
                 correct_locations += 1
-            if guess[i] in number_dict:
+            if guess[i] in number_dict: #frequency
                 number_dict[guess[i]] -= 1
                 if number_dict[guess[i]] == 0:
                     number_dict.pop(guess[i])
                 correct_numbers += 1
+        ##guess: [1,2,3,1] 'if guess[i] in secret_code_list
+        ##secret_number: [1,2,3,4] number_dict = { 2: 1, 3: 1, 4:1}
+        ##feedback: 3 in correct spot, 4 correct numbers
 
         feedback = f"{correct_numbers} right numbers, {correct_locations} in the right location"
         self.update_history(guess, feedback)
